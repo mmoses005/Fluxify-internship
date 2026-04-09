@@ -1,223 +1,141 @@
-import React, { useState } from 'react';
+// App.jsx
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
-// --------------------------------------------------------------
-// TASK 1: Counter, ToggleCard, ColorPicker components
-// --------------------------------------------------------------
-
-// 1. Counter component
-const Counter = () => {
-  const [count, setCount] = useState(0);
-  
-  const increment = () => setCount(prev => prev + 1);
-  const decrement = () => setCount(prev => (prev > 0 ? prev - 1 : 0));
-  
-  return (
-    <div className="counter-card">
-      <h3 className="counter-title">
-        <span className="counter-icon">🔢</span> Interactive Counter
-      </h3>
-      <div className="counter-buttons">
-        <button onClick={decrement} className="btn-decrement" aria-label="Decrement">−</button>
-        <span className="counter-value">{count}</span>
-        <button onClick={increment} className="btn-increment" aria-label="Increment">+</button>
-      </div>
-      <p className="counter-note">Count never goes below 0</p>
-    </div>
-  );
-};
-
-// 2. ToggleCard component
-const ToggleCard = () => {
-  const [isVisible, setIsVisible] = useState(true);
-  const toggleVisibility = () => setIsVisible(prev => !prev);
-  
-  return (
-    <div className="toggle-card">
-      <div className="toggle-header">
-        <h3 className="toggle-title">
-          <span className="toggle-icon">🎴</span> Toggle Card
-        </h3>
-        <button onClick={toggleVisibility} className="toggle-btn">
-          {isVisible ? 'Hide Content' : 'Show Content'}
-        </button>
-      </div>
-      {isVisible && (
-        <div className="toggle-content">
-          <p>✨ This is the hidden content! You can click the button above to toggle me on/off.</p>
-          <div className="toggle-footer">🎉 Interactive UI demo</div>
-        </div>
-      )}
-      {!isVisible && (
-        <div className="toggle-hidden-message">Content is hidden. Click "Show Content" to reveal.</div>
-      )}
-    </div>
-  );
-};
-
-// 3. ColorPicker component
-const ColorPicker = () => {
-  const [bgColor, setBgColor] = useState("#3b82f6");
-  
-  const colorOptions = [
-    { name: "Red", value: "#ef4444" },
-    { name: "Green", value: "#10b981" },
-    { name: "Blue", value: "#3b82f6" },
-    { name: "Purple", value: "#8b5cf6" }
-  ];
-  
-  return (
-    <div className="colorpicker-card">
-      <h3 className="colorpicker-title">
-        <span className="colorpicker-icon">🎨</span> Color Picker
-      </h3>
-      <div className="color-buttons">
-        {colorOptions.map((color) => (
-          <button
-            key={color.name}
-            onClick={() => setBgColor(color.value)}
-            className="color-btn"
-            style={{ backgroundColor: color.value }}
-          >
-            {color.name}
-          </button>
-        ))}
-      </div>
-      <div className="color-preview" style={{ backgroundColor: bgColor }}>
-        <span>Preview Box</span>
-      </div>
-      <p className="color-current">Current color: <span className="color-code">{bgColor}</span></p>
-    </div>
-  );
-};
-
-// --------------------------------------------------------------
-// TASK 2: Product Components
-// --------------------------------------------------------------
-
-// ProductCard child component
-const ProductCard = ({ product, onAddToCart }) => {
-  const [addedFeedback, setAddedFeedback] = useState(false);
-  
-  const handleAdd = () => {
-    onAddToCart(product.id);
-    setAddedFeedback(true);
-    setTimeout(() => setAddedFeedback(false), 600);
-  };
-  
-  const imageEmoji = product.category === 'electronics' ? '📱' : (product.category === 'clothing' ? '👕' : '📚');
-  
-  return (
-    <div className="product-card">
-      <div className="product-content">
-        <div className="product-info">
-          <span className="product-emoji">{imageEmoji}</span>
-          <h3 className="product-name">{product.name}</h3>
-          <p className="product-description">{product.description}</p>
-        </div>
-        <div className="product-price">${product.price}</div>
-      </div>
-      <div className="product-footer">
-        <span className="product-category">{product.category}</span>
-        <button onClick={handleAdd} className={`product-add-btn ${addedFeedback ? 'added' : ''}`}>
-          {addedFeedback ? '✓ Added!' : '🛒 Add to Cart'}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// CartSummary component
-const CartSummary = ({ totalItems }) => {
-  return (
-    <div className="cart-summary">
-      <div className="cart-header">
-        <span className="cart-icon">🛍️</span>
-        <h2 className="cart-title">Cart Summary</h2>
-      </div>
-      <div className="cart-count">
-        <span className="cart-number">{totalItems}</span>
-        <span className="cart-label">items</span>
-      </div>
-      <p className="cart-message">
-        {totalItems === 0 ? "Your cart is empty. Add some products!" : `You have ${totalItems} item${totalItems !== 1 ? 's' : ''} in your cart.`}
-      </p>
-      <div className="cart-note">✨ Cart state lifted to parent – shared across all product cards</div>
-    </div>
-  );
-};
-
-// ShoppingCart parent component
-const ShoppingCart = () => {
-  const [cartCount, setCartCount] = useState(0);
-  
-  const products = [
-    { id: 1, name: "Wireless Headphones", description: "Noise cancelling, 30h battery", price: 79.99, category: "electronics" },
-    { id: 2, name: "Cotton T-Shirt", description: "Soft, breathable fabric", price: 19.99, category: "clothing" },
-    { id: 3, name: "JavaScript: The Good Parts", description: "Essential JS book", price: 29.99, category: "books" },
-    { id: 4, name: "Smart Watch", description: "Fitness tracker & notifications", price: 199.99, category: "electronics" },
-    { id: 5, name: "Denim Jacket", description: "Classic style, all seasons", price: 59.99, category: "clothing" }
-  ];
-  
-  const addToCartHandler = (productId) => {
-    setCartCount(prevCount => prevCount + 1);
-    console.log(`Product ID ${productId} added to cart. New total: ${cartCount + 1}`);
-  };
-  
-  return (
-    <div className="shopping-cart-container">
-      <div className="products-section">
-        <div className="products-header">
-          <h2 className="products-title">📦 Our Products</h2>
-          <span className="products-count">{products.length} items</span>
-        </div>
-        <div className="products-grid">
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} onAddToCart={addToCartHandler} />
-          ))}
-        </div>
-      </div>
-      <div className="summary-section">
-        <CartSummary totalItems={cartCount} />
-      </div>
-    </div>
-  );
-};
-
-// --------------------------------------------------------------
-// Main App Component
-// --------------------------------------------------------------
 const App = () => {
+  // Task 2: Dark mode state with localStorage persistence
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return savedTheme === 'dark' || (savedTheme === null && systemPrefersDark);
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => !prev);
+  };
+
+  const cards = [
+    { id: 1, title: "Analytics Dashboard", body: "Track your key metrics and performance indicators in real-time. Get insights into user behavior and engagement patterns." },
+    { id: 2, title: "User Management", body: "Manage user accounts, roles, and permissions efficiently. Streamline onboarding and offboarding processes." },
+    { id: 3, title: "Content Library", body: "Organize and access your digital assets. Quick search and filtering options for better productivity." },
+    { id: 4, title: "Reporting Tools", body: "Generate comprehensive reports with customizable metrics. Export data in multiple formats for analysis." },
+    { id: 5, title: "Notification Center", body: "Centralized hub for all system alerts and messages. Customize notification preferences per user." },
+    { id: 6, title: "Settings & Preferences", body: "Configure system settings, user preferences, and security options. Control access levels and integrations." }
+  ];
+
   return (
     <div className="app-container">
-      <div className="app-header">
-        <h1 className="app-title">Day 2: Props & State Mastery</h1>
-        <p className="app-subtitle">Interactive Counter · ToggleCard · ColorPicker · Product Listing with Shared Cart</p>
-      </div>
-      
-      <section className="task-section">
-        <div className="task-badge task1-badge">Task 1</div>
-        <h2 className="task-title">Interactive Components (useState)</h2>
-        <div className="task1-grid">
-          <Counter />
-          <ToggleCard />
-          <ColorPicker />
+      {/* Sidebar - hidden on mobile, fixed on desktop */}
+      <aside className="sidebar">
+        <div className="sidebar-content">
+          <div className="sidebar-header">
+            <h2 className="sidebar-title">Dashboard</h2>
+            <p className="sidebar-subtitle">Navigation Panel</p>
+          </div>
+          
+          <nav className="sidebar-nav">
+            <a href="#" className="nav-link">
+              <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span>Overview</span>
+            </a>
+            <a href="#" className="nav-link">
+              <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span>Analytics</span>
+            </a>
+            <a href="#" className="nav-link">
+              <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <span>Users</span>
+            </a>
+            <a href="#" className="nav-link">
+              <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Settings</span>
+            </a>
+          </nav>
+          
+          <div className="sidebar-footer">
+            <div className="footer-text">
+              <span>v1.0.0</span>
+              <span>•</span>
+              <span>© 2024</span>
+            </div>
+          </div>
         </div>
-      </section>
-      
-      <div className="divider"></div>
-      
-      <section className="task-section">
-        <div className="task-badge task2-badge">Task 2</div>
-        <h2 className="task-title">Shopping Cart (Lifted State)</h2>
-        <span className="task-subnote">Parent manages cart count → passes handler to children</span>
-        <ShoppingCart />
-      </section>
-      
-      <div className="app-footer">
-        <div className="footer-item">✅ Task 1: Counter never goes below 0; ToggleCard hides/shows content; ColorPicker updates preview background.</div>
-        <div className="footer-item">✅ Task 2: ShoppingCart parent holds cart state, passes addToCart handler. ProductCard child uses it to update parent's count. CartSummary displays total items.</div>
-      </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Header with Dark Mode Toggle */}
+        <header className="main-header">
+          <div className="header-container">
+            <div className="mobile-menu">
+              <button className="mobile-menu-btn">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+            
+            <h1 className="page-title">Dashboard Overview</h1>
+            
+            <button onClick={toggleDarkMode} className="theme-toggle" aria-label="Toggle dark mode">
+              {darkMode ? (
+                <svg className="theme-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="theme-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </header>
+
+        {/* Cards Grid */}
+        <div className="cards-container">
+          <div className="cards-grid">
+            {cards.map(card => (
+              <div key={card.id} className="card">
+                <div className="card-header-bar"></div>
+                <div className="card-body">
+                  <h3 className="card-title">{card.title}</h3>
+                  <p className="card-text">{card.body}</p>
+                  <button className="card-button">
+                    Learn More →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="info-banner">
+            <p className="info-text">
+              💡 Tip: Resize your browser window to see the responsive behavior. 
+              Sidebar is hidden on mobile and appears as a fixed panel on desktop. 
+              Card grid adapts from 3 columns → 2 columns → 1 column.
+            </p>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
